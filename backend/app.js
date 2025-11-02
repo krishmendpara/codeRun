@@ -13,19 +13,10 @@ const allowedOrigins = [
     'https://coderunapp.vercel.app'  
 ];
 app.use(cors({
-    origin: function (origin, callback) {
-        // Allow requests with no origin (Postman, mobile apps, etc.)
-        if (!origin) return callback(null, true);
-
-        if (allowedOrigins.includes(origin)) {
-            callback(null, true);
-        } else {
-            callback(new Error('Not allowed by CORS'));
-        }
-    },
-    credentials: true,           // Important for cookies
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],  // Allowed methods
-    allowedHeaders: ['Content-Type', 'Authorization']      // Allowed headers
+  origin: true,  // Allows ALL origins
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
 app.use(express.json());
