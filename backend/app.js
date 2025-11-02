@@ -10,7 +10,7 @@ connect();
 const allowedOrigins = [
     'http://localhost:4173',  
     'https://code-run-nine.vercel.app',
-    'https://coderunapp.vercel.app/'  
+    'https://coderunapp.vercel.app'  
 ];
 app.use(cors({
     origin: function (origin, callback) {
