@@ -9,7 +9,7 @@ const app = express();
 connect();
 const allowedOrigins = [
     'http://localhost:4173',  
-    'https://coderunapp.vercel.app'  
+    'https://code-run-nine.vercel.app'  
 ];
 app.use(cors({
     origin: function (origin, callback) {
