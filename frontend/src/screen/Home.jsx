@@ -24,7 +24,7 @@ export default function Home() {
   useEffect(() => {
     if (!user) return;
     axios
-      .get('/code/submissions')
+      .get("/code/submissions")
       .then((res) => {
         setAllfiles(res?.data);
         setLoading(false);
@@ -42,22 +42,17 @@ export default function Home() {
       .catch((err) => console.log(err));
   };
 
-  // Logout
-  // const handleLogout = () => {
-  //   localStorage.removeItem("token");
-  //   setUser(null);
-  //   navigate("/login");
-  // };
-   const handleLogout = () => {
-         axios.post('/user/logout')
-         .then(() => {
-           localStorage.removeItem('token');
-           setUser(null);
-           navigate('/login');
-         })
-         .catch((err) => console.log(err));
-       };
-
+  // Logout (same logic)
+  const handleLogout = () => {
+    axios
+      .post("/user/logout")
+      .then(() => {
+        localStorage.removeItem("token");
+        setUser(null);
+        navigate("/login");
+      })
+      .catch((err) => console.log(err));
+  };
 
   // Filter files
   const filteredFiles = Allfiles.filter((f) =>
@@ -80,6 +75,7 @@ export default function Home() {
         </div>
 
         <div className="flex items-center gap-3">
+          {/* Desktop Buttons */}
           <button
             onClick={() => navigate("/about")}
             className="hidden sm:block px-4 py-2 border border-emerald-600 rounded-lg hover:bg-emerald-800/40 text-emerald-400 text-sm font-medium transition-all"
@@ -96,7 +92,17 @@ export default function Home() {
           >
             Open Editor
           </button>
-          {/* Menu Icon */}
+
+          {/* ✅ Desktop Logout Button */}
+          <button
+            onClick={handleLogout}
+            className="hidden sm:flex items-center gap-2 px-4 py-2 border border-red-500 text-red-400 text-sm rounded-lg hover:bg-red-900/40 transition-all font-medium"
+          >
+            <RiLogoutBoxLine size={18} />
+            Logout
+          </button>
+
+          {/* Menu Icon (Mobile Only) */}
           <button
             onClick={() => setMenuOpen(true)}
             className="sm:hidden p-2 rounded-md bg-gray-800 hover:bg-gray-700 transition-all"
@@ -203,8 +209,8 @@ export default function Home() {
               >
                 <div>
                   <h3 className="text-emerald-400 font-semibold text-base sm:text-lg truncate flex items-center gap-2">
-                    <RiFileCodeLine size={18} />    {file.fileName}
-                        {file.language === "python" ? ".py" : ".js"}
+                    <RiFileCodeLine size={18} /> {file.fileName}
+                    {file.language === "python" ? ".py" : ".js"}
                   </h3>
                   <p className="text-sm text-gray-400 mt-1">
                     Language: {file.language}

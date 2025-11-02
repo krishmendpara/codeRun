@@ -69,7 +69,8 @@ export const saveCode = async (req, res) => {
 export const getSubmissions = async (req, res) => {
 
     try {
-        const codes = await codeService.getAllSubmissions()
+        const userId = req.user.id;
+        const codes = await codeService.getAllSubmissions(userId);
         res.status(200).json(codes);
 
     } catch (err) {

@@ -6,7 +6,7 @@ import {
   RiArrowLeftLine,
   RiAlertLine,
   RiFolderOpenLine,
-  RiHome4Line, // ✅ Added home icon
+  RiHome4Line,
 } from "react-icons/ri";
 import { UserContext } from "../context/UserContext";
 import axios from "../config/axios.js";
@@ -111,131 +111,170 @@ export default function Editor() {
   };
 
   return (
-    <main className="min-h-screen bg-linear-to-tr from-gray-950 via-gray-900 to-emerald-950 p-3 sm:p-6">
-      
-     
-      <div className="max-w-7xl mx-auto flex flex-col rounded-2xl sm:rounded-3xl shadow-2xl border border-emerald-700/40 bg-gray-900/70 backdrop-blur-xl overflow-hidden h-auto md:h-[90vh]">
+    <main className="min-h-screen flex bg-linear-to-tr from-gray-950 via-gray-900 to-emerald-950">
 
-        {/* ✅ HEADER */}
-        <header className="flex flex-col sm:flex-row justify-between items-center px-4 sm:px-6 py-3 border-b border-emerald-600 bg-gray-800/70 gap-3"> 
-          <div className="flex flex-wrap gap-2">
-            {["python", "javascript"].map((lang) => (
-              <button
-                key={lang}
-                onClick={() => setLanguage(lang)}
-                className={`px-4 py-2 rounded-full text-sm font-semibold transition-all duration-300 flex items-center gap-2 ${language === lang
-                    ? "bg-emerald-500 text-black shadow-md"
-                    : "text-emerald-400 hover:bg-gray-700 hover:text-emerald-300"
+      {/* 🧭 Sidebar (Visible on Desktop) */}
+      <nav className="hidden md:flex flex-col w-56 bg-gray-900/80 border-r border-emerald-700/40 p-5 space-y-5">
+        <h1 className="text-emerald-400 font-bold text-lg mb-6">CodeRun</h1>
+
+        <button
+          onClick={() => navigate("/")}
+          className="flex items-center gap-2 text-gray-300 hover:text-emerald-400 transition"
+        >
+          <RiHome4Line size={20} />
+          <span>Home</span>
+        </button>
+
+        <button
+          onClick={() => navigate("/editor")}
+          className="flex items-center gap-2 text-gray-300 hover:text-emerald-400 transition"
+        >
+          <RiFileCodeLine size={20} />
+          <span>Editor</span>
+        </button>
+
+        <button
+          onClick={() => navigate("/saved")}
+          className="flex items-center gap-2 text-gray-300 hover:text-emerald-400 transition"
+        >
+          <RiFolderOpenLine size={20} />
+          <span>Saved Files</span>
+        </button>
+
+        <button
+          onClick={() => navigate("/login")}
+          className="flex items-center gap-2 text-gray-300 hover:text-emerald-400 transition"
+        >
+          <RiArrowLeftLine size={20} />
+          <span>Logout</span>
+        </button>
+      </nav>
+
+      {/* 🧠 Main Editor Section */}
+      <div className="flex-1 flex flex-col">
+        <div className="max-w-7xl mx-auto flex flex-col rounded-2xl sm:rounded-3xl shadow-2xl border border-emerald-700/40 bg-gray-900/70 backdrop-blur-xl overflow-hidden h-auto md:h-[90vh]">
+
+          {/* HEADER */}
+          <header className="flex flex-col sm:flex-row justify-between items-center px-4 sm:px-6 py-3 border-b border-emerald-600 bg-gray-800/70 gap-3"> 
+            <div className="flex flex-wrap gap-2">
+              {["python", "javascript"].map((lang) => (
+                <button
+                  key={lang}
+                  onClick={() => setLanguage(lang)}
+                  className={`px-4 py-2 rounded-full text-sm font-semibold transition-all duration-300 flex items-center gap-2 ${
+                    language === lang
+                      ? "bg-emerald-500 text-black shadow-md"
+                      : "text-emerald-400 hover:bg-gray-700 hover:text-emerald-300"
                   }`}
+                >
+                  <RiFileCodeLine size={18} />
+                  {lang.charAt(0).toUpperCase() + lang.slice(1)}
+                </button>
+              ))}
+            </div>
+
+            <div className="flex items-center gap-2 w-full sm:w-auto">
+              <input
+                type="text"
+                placeholder="File name"
+                value={fileName}
+                onChange={(e) => setFileName(e.target.value)}
+                className="rounded-md px-3 py-2 bg-gray-900 text-emerald-400 border border-emerald-700 focus:ring-2 focus:ring-emerald-400 outline-none flex-1 sm:w-56 text-sm"
+              />
+              <button
+                onClick={saveFile}
+                className="px-4 py-2 bg-emerald-500 text-gray-900 font-semibold rounded-lg shadow-md hover:bg-emerald-400 transition-all flex items-center gap-1 text-sm"
               >
-                <RiFileCodeLine size={18} />
-                {lang.charAt(0).toUpperCase() + lang.slice(1)}
+                <RiSaveLine size={18} />
+                Save
               </button>
-            ))}
-          </div>
+            </div>
+          </header>
 
-          {/* ✅ File name + buttons */}
-          <div className="flex items-center gap-2 w-full sm:w-auto">
-            <input
-              type="text"
-              placeholder="File name"
-              value={fileName}
-              onChange={(e) => setFileName(e.target.value)}
-              className="rounded-md px-3 py-2 bg-gray-900 text-emerald-400 border border-emerald-700 focus:ring-2 focus:ring-emerald-400 outline-none flex-1 sm:w-56 text-sm"
-            />
-            <button
-              onClick={saveFile}
-              className="px-4 py-2 bg-emerald-500 text-gray-900 font-semibold rounded-lg shadow-md hover:bg-emerald-400 transition-all flex items-center gap-1 text-sm"
-            >
-              <RiSaveLine size={18} />
-              Save
-            </button>
-           
-          </div>
-        </header>
+          {/* EDITOR + OUTPUT */}
+          <div className="flex flex-col md:flex-row flex-1">
+            <section className="flex flex-col flex-1 p-4 sm:p-6">
+              <textarea
+                spellCheck={false}
+                className="flex-1 resize-none bg-gray-950 text-emerald-300 font-mono text-sm sm:text-base rounded-lg p-4 sm:p-6 focus:ring-4 focus:ring-emerald-500/40 outline-none min-h-[250px]"
+                value={code[language]}
+                onChange={(e) =>
+                  setCode((prev) => ({ ...prev, [language]: e.target.value }))
+                }
+                placeholder={`Write ${language.toUpperCase()} code...`}
+              />
 
-        {/* EDITOR & OUTPUT */}
-        <div className="flex flex-col md:flex-row flex-1">
-          <section className="flex flex-col flex-1 p-4 sm:p-6">
-            <textarea
-              spellCheck={false}
-              className="flex-1 resize-none bg-gray-950 text-emerald-300 font-mono text-sm sm:text-base rounded-lg p-4 sm:p-6 focus:ring-4 focus:ring-emerald-500/40 outline-none min-h-[250px]"
-              value={code[language]}
-              onChange={(e) =>
-                setCode((prev) => ({ ...prev, [language]: e.target.value }))
-              }
-              placeholder={`Write ${language.toUpperCase()} code...`}
-            />
-
-            <div className="flex flex-col sm:flex-row justify-between items-center mt-4 gap-2">
-              {message && (
-                <div
-                  className={`flex items-center gap-2 text-sm ${messageType === "success"
-                      ? "text-emerald-400"
-                      : messageType === "error"
+              <div className="flex flex-col sm:flex-row justify-between items-center mt-4 gap-2">
+                {message && (
+                  <div
+                    className={`flex items-center gap-2 text-sm ${
+                      messageType === "success"
+                        ? "text-emerald-400"
+                        : messageType === "error"
                         ? "text-red-400"
                         : "text-amber-400"
                     }`}
+                  >
+                    {messageType === "error" ? (
+                      <RiAlertLine size={18} />
+                    ) : messageType === "success" ? (
+                      <RiSaveLine size={18} />
+                    ) : (
+                      <RiFolderOpenLine size={18} />
+                    )}
+                    {message}
+                  </div>
+                )}
+                <button
+                  onClick={runCode}
+                  className="px-6 py-2 bg-emerald-500 text-gray-900 font-semibold rounded-lg shadow-md hover:bg-emerald-400 transition-all flex items-center gap-2 text-sm"
                 >
-                  {messageType === "error" ? (
-                    <RiAlertLine size={18} />
-                  ) : messageType === "success" ? (
-                    <RiSaveLine size={18} />
-                  ) : (
-                    <RiFolderOpenLine size={18} />
-                  )}
-                  {message}
-                </div>
-              )}
-              <button
-                onClick={runCode}
-                className="px-6 py-2 bg-emerald-500 text-gray-900 font-semibold rounded-lg shadow-md hover:bg-emerald-400 transition-all flex items-center gap-2 text-sm"
-              >
-                <RiPlayLine size={18} />
-                Run
-              </button>
-            </div>
-          </section>
+                  <RiPlayLine size={18} />
+                  Run
+                </button>
+              </div>
+            </section>
 
-          {/* ✅ OUTPUT PANEL */}
-          <aside className="w-full md:w-[400px] bg-gray-850 border-t md:border-t-0 md:border-l border-emerald-700/50 flex flex-col">
-            <div className="p-4 sm:p-6 border-b border-emerald-700/40">
-              <h2 className="text-emerald-400 font-semibold mb-3 text-lg flex items-center gap-2">
-                <RiFileCodeLine size={20} /> Output
-              </h2>
-              <pre className="whitespace-pre-wrap text-green-300 bg-gray-950 p-4 rounded-lg border border-emerald-700 text-sm sm:text-base font-mono leading-relaxed min-h-[250px] max-h-[350px] overflow-auto">
-                {output || "Your output will appear here..."}
-              </pre>
-            </div>
+            {/* OUTPUT PANEL */}
+            <aside className="w-full md:w-[400px] bg-gray-850 border-t md:border-t-0 md:border-l border-emerald-700/50 flex flex-col">
+              <div className="p-4 sm:p-6 border-b border-emerald-700/40">
+                <h2 className="text-emerald-400 font-semibold mb-3 text-lg flex items-center gap-2">
+                  <RiFileCodeLine size={20} /> Output
+                </h2>
+                <pre className="whitespace-pre-wrap text-green-300 bg-gray-950 p-4 rounded-lg border border-emerald-700 text-sm sm:text-base font-mono leading-relaxed min-h-[250px] max-h-[350px] overflow-auto">
+                  {output || "Your output will appear here..."}
+                </pre>
+              </div>
 
-            <div className="p-4 sm:p-5 overflow-y-auto flex-1">
-              <h3 className="text-emerald-400 font-semibold mb-3 text-center text-base sm:text-lg flex items-center justify-center gap-2">
-                <RiFolderOpenLine size={20} /> Recent Files
-              </h3>
-              {savedFiles.length === 0 ? (
-                <p className="text-gray-400 text-sm text-center">
-                  No files saved yet
-                </p>
-              ) : (
-                <ul className="space-y-2">
-                  {savedFiles.slice(-5).map((file) => (
-                    <li key={file._id}>
-                      <button
-                        onClick={() => loadFile(file)}
-                        className="w-full text-left px-3 py-2 bg-gray-900 hover:bg-emerald-600/20 rounded-lg transition text-emerald-300 text-sm truncate border border-emerald-800 flex items-center gap-2"
-                      >
-                        <RiFileCodeLine size={16} />
-                        <span>
-                          {file.fileName}
-                          {file.language === "python" ? ".py" : ".js"}
-                        </span>
-                      </button>
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </div>
-          </aside>
+              <div className="p-4 sm:p-5 overflow-y-auto flex-1">
+                <h3 className="text-emerald-400 font-semibold mb-3 text-center text-base sm:text-lg flex items-center justify-center gap-2">
+                  <RiFolderOpenLine size={20} /> Recent Files
+                </h3>
+                {savedFiles.length === 0 ? (
+                  <p className="text-gray-400 text-sm text-center">
+                    No files saved yet
+                  </p>
+                ) : (
+                  <ul className="space-y-2">
+                    {savedFiles.slice(-5).map((file) => (
+                      <li key={file._id}>
+                        <button
+                          onClick={() => loadFile(file)}
+                          className="w-full text-left px-3 py-2 bg-gray-900 hover:bg-emerald-600/20 rounded-lg transition text-emerald-300 text-sm truncate border border-emerald-800 flex items-center gap-2"
+                        >
+                          <RiFileCodeLine size={16} />
+                          <span>
+                            {file.fileName}
+                            {file.language === "python" ? ".py" : ".js"}
+                          </span>
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+            </aside>
+          </div>
         </div>
       </div>
     </main>

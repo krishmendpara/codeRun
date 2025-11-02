@@ -16,9 +16,9 @@ export const savecode = async ({code,language,fileName,user,output,error,executi
     })
 }
 
-export const getAllSubmissions = async ()=>{
+export const getAllSubmissions = async (userId)=>{
 
-    return await codeModel.find().sort({dateOfSubmission:-1});   //descending
+    return await codeModel.find({ user: userId }).sort({dateOfSubmission:-1});   //descending
 
 }
 
