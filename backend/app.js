@@ -9,7 +9,7 @@ const app = express();
 connect();
 const allowedOrigins = [
   'http://localhost:4173',  // Vite dev server (local development)
-  'https://coderunapp.vercel.app/'  // ⚠️ REPLACE WITH YOUR REAL FRONTEND URL
+  'https://coderunapp.vercel.app'  // ⚠️ REPLACE WITH YOUR REAL FRONTEND URL
 ];
 app.use(cors({
   origin: function(origin, callback) {
