@@ -204,10 +204,11 @@ export default function Editor() {
             <div className="p-4 sm:p-6 border-b border-emerald-700/40">
               <h2 className="text-emerald-400 font-semibold mb-3 text-lg flex items-center gap-2">
                 <RiFileCodeLine size={20} />
-                {output ? (
-                  <span>Output</span>
+                {error || '' ? (
+                  
+                   <span className="text-red-400">Error!!</span>
                 ) : (
-                  <span className="text-red-400">Error!!</span>
+                  <span>Output</span>
                 )}
 
               </h2>
