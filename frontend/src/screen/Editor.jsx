@@ -6,7 +6,7 @@ import {
   RiArrowLeftLine,
   RiAlertLine,
   RiFolderOpenLine,
-  RiHome4Line, // ✅ Added home icon
+  RiHome4Line,
 } from "react-icons/ri";
 import { UserContext } from "../context/UserContext";
 import axios from "../config/axios.js";
@@ -53,9 +53,11 @@ export default function Editor() {
     axios
       .post("/code/run", { language, code: code[language] })
       .then((res) => {
+
         setOutput(res.data.output);
         setExecutionTime(res.data.executionTime);
         setError(res.data.error);
+        console.log(res.data)
       })
       .catch((err) => setOutput(err.response?.data?.error || "Execution error"));
   };
@@ -112,20 +114,20 @@ export default function Editor() {
 
   return (
     <main className="min-h-screen bg-linear-to-tr from-gray-950 via-gray-900 to-emerald-950 p-3 sm:p-6">
-      
-     
+
+
       <div className="max-w-7xl mx-auto flex flex-col rounded-2xl sm:rounded-3xl shadow-2xl border border-emerald-700/40 bg-gray-900/70 backdrop-blur-xl overflow-hidden h-auto md:h-[90vh]">
 
-        {/* ✅ HEADER */}
-        <header className="flex flex-col sm:flex-row justify-between items-center px-4 sm:px-6 py-3 border-b border-emerald-600 bg-gray-800/70 gap-3"> 
+        {/* HEADER */}
+        <header className="flex flex-col sm:flex-row justify-between items-center px-4 sm:px-6 py-3 border-b border-emerald-600 bg-gray-800/70 gap-3">
           <div className="flex flex-wrap gap-2">
             {["python", "javascript"].map((lang) => (
               <button
                 key={lang}
                 onClick={() => setLanguage(lang)}
                 className={`px-4 py-2 rounded-full text-sm font-semibold transition-all duration-300 flex items-center gap-2 ${language === lang
-                    ? "bg-emerald-500 text-black shadow-md"
-                    : "text-emerald-400 hover:bg-gray-700 hover:text-emerald-300"
+                  ? "bg-emerald-500 text-black shadow-md"
+                  : "text-emerald-400 hover:bg-gray-700 hover:text-emerald-300"
                   }`}
               >
                 <RiFileCodeLine size={18} />
@@ -134,7 +136,7 @@ export default function Editor() {
             ))}
           </div>
 
-          {/* ✅ File name + buttons */}
+          {/*File name + buttons */}
           <div className="flex items-center gap-2 w-full sm:w-auto">
             <input
               type="text"
@@ -150,7 +152,7 @@ export default function Editor() {
               <RiSaveLine size={18} />
               Save
             </button>
-           
+
           </div>
         </header>
 
@@ -171,10 +173,10 @@ export default function Editor() {
               {message && (
                 <div
                   className={`flex items-center gap-2 text-sm ${messageType === "success"
-                      ? "text-emerald-400"
-                      : messageType === "error"
-                        ? "text-red-400"
-                        : "text-amber-400"
+                    ? "text-emerald-400"
+                    : messageType === "error"
+                      ? "text-red-400"
+                      : "text-amber-400"
                     }`}
                 >
                   {messageType === "error" ? (
@@ -197,14 +199,28 @@ export default function Editor() {
             </div>
           </section>
 
-          {/* ✅ OUTPUT PANEL */}
+          {/*OUTPUT PANEL */}
           <aside className="w-full md:w-[400px] bg-gray-850 border-t md:border-t-0 md:border-l border-emerald-700/50 flex flex-col">
             <div className="p-4 sm:p-6 border-b border-emerald-700/40">
               <h2 className="text-emerald-400 font-semibold mb-3 text-lg flex items-center gap-2">
-                <RiFileCodeLine size={20} /> Output
+                <RiFileCodeLine size={20} />
+                {output ? (
+                  <span>Output</span>
+                ) : (
+                  <span className="text-red-400">Error!!</span>
+                )}
+
               </h2>
               <pre className="whitespace-pre-wrap text-green-300 bg-gray-950 p-4 rounded-lg border border-emerald-700 text-sm sm:text-base font-mono leading-relaxed min-h-[250px] max-h-[350px] overflow-auto">
-                {output || "Your output will appear here..."}
+                {output ? output : error}
+          
+                  {output? (
+                     <b>Executed in {executionTime}</b>
+                  ): <p></p>}
+                 
+             
+
+
               </pre>
             </div>
 

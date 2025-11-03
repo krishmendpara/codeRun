@@ -3,6 +3,7 @@ import fs from 'fs';
 import util from 'util';
 import * as codeService from '../service/code.service.js'
 import codeModel from '../models/code.model.js';
+
 const execPromise = util.promisify(exec);
 
 
@@ -26,16 +27,28 @@ export const runcode = async (req, res) => {
             return res.status(400).json({ message: "Invalid language" });
         }
         const start = Date.now();
-        const { stdout } = await execPromise(command);
+         let stdout = '', stderr = '';
+
+        try {
+            const result = await execPromise(command);
+            stdout = result.stdout;
+            stderr = result.stderr;
+        } catch (error) {
+            
+            stderr = error.stderr || error.message;
+        }
+
         const end = Date.now();
         const executionTime = end - start;
 
 
         fs.unlinkSync(filename);
-        return res.status(200).json({ output: stdout, executionTime: `${executionTime} ms` });
+       return res.status(200).json({ output: stdout, executionTime: `${executionTime} ms`, error: stderr});
+        
 
     } catch (err) {
-        return res.status(500).json({ message: err.stderr || err.message });
+       
+        return res.status(500).json({ message: err.message });
     }
 
 }
