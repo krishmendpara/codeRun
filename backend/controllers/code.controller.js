@@ -17,7 +17,7 @@ export const runcode = async (req, res) => {
         if (language === 'Python' || language === 'PY' || language === 'py' || language === 'PYTHON' || language === 'python') {
             filename = "temp.py";
             fs.writeFileSync(filename, code);
-            command = `python ${filename}`;
+            command = `python -X utf8 ${filename}`;
 
         } else if (language === 'JavaScript' || language === 'JS' || language === 'Javascript' || language === 'js' || language === 'JAVASCRIPT' || language === 'javascript') {
             filename = "temp.js";
