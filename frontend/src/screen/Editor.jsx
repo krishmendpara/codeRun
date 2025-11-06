@@ -3,8 +3,7 @@ import {
   RiSaveLine,
   RiFileCodeLine,
   RiPlayLine,
-  RiAlertLine,
-  RiFolderOpenLine
+  RiFolderOpenLine,
 } from "react-icons/ri";
 import { UserContext } from "../context/UserContext";
 import axios from "../config/axios";
@@ -33,13 +32,13 @@ export default function CodeEditor() {
 
   const file = location.state?.loadFile || null;
 
-  //Auth check
+  //Auth Check
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (!token || !user) navigate("/login");
   }, [user, navigate]);
 
-  //Fetch saved files
+  //Fetch Saved Files
   useEffect(() => {
     axios
       .get("/code/submissions")
@@ -47,7 +46,7 @@ export default function CodeEditor() {
       .catch((err) => console.error("Error fetching files:", err));
   }, []);
 
-  //Auto hide messages
+  //Auto Hide Messages
   useEffect(() => {
     if (message) {
       const timer = setTimeout(() => setMessage(""), 2500);
@@ -55,7 +54,7 @@ export default function CodeEditor() {
     }
   }, [message]);
 
-  //Load file
+  //Load File
   useEffect(() => {
     if (file) {
       setLanguage(file.language);
@@ -64,7 +63,7 @@ export default function CodeEditor() {
     }
   }, [file]);
 
-  // ✅ Run Code
+  //Run Code
   const runCode = () => {
     axios
       .post("/code/run", { language, code: code[language] })
@@ -76,7 +75,7 @@ export default function CodeEditor() {
       .catch((err) => setError(err.response?.data?.error || "Execution failed"));
   };
 
-  // ✅ Save File
+  //Save File
   const saveFile = () => {
     if (!fileName.trim()) {
       setMessage("Please enter a file name.");
@@ -106,25 +105,24 @@ export default function CodeEditor() {
       });
   };
 
-  // ✅ Load file from list
+  //Load File
   const loadFile = (file) => {
     setLanguage(file.language);
     setCode((prev) => ({ ...prev, [file.language]: file.code }));
     setFileName(file.fileName);
-
     setMessage(`Loaded ${file.fileName}`);
     setMessageType("info");
   };
 
   return (
-    <main className="min-h-screen bg-gradient-to-tr from-gray-950 via-gray-900 to-emerald-950 p-4">
-      <div className="max-w-7xl mx-auto rounded-2xl shadow-xl border border-emerald-700/40 bg-gray-900/70 backdrop-blur-xl h-auto lg:h-[90vh] flex flex-col">
+    <main className="min-h-screen bg-gradient-to-tr from-gray-950 via-gray-900 to-emerald-950 p-3 sm:p-4">
+      <div className="max-w-7xl mx-auto rounded-2xl shadow-xl border border-emerald-700/40 bg-gray-900/70 backdrop-blur-xl">
 
-        {/* ✅ HEADER */}
-        <header className="flex flex-col lg:flex-row justify-between gap-3 items-center p-4 border-b border-emerald-700/40 bg-gray-800/50">
+        {/* HEADER */}
+        <header className="flex flex-col gap-3 p-4 border-b border-emerald-700/40 bg-gray-800/50">
 
           {/* Language Buttons */}
-          <div className="flex gap-3 w-full lg:w-auto justify-center">
+          <div className="flex gap-2 justify-center flex-wrap">
             {["python", "javascript"].map((lang) => (
               <button
                 key={lang}
@@ -141,8 +139,10 @@ export default function CodeEditor() {
             ))}
           </div>
 
-          {/* File Name Input + Save */}
-          <div className="flex items-center gap-2 w-full lg:w-96">
+          {/* File Input + Save button (mobile optimized) */}
+          <div className="flex flex-col sm:flex-row sm:items-center gap-2">
+
+            {/* FILENAME INPUT */}
             <input
               type="text"
               placeholder="File Name"
@@ -150,21 +150,25 @@ export default function CodeEditor() {
               onChange={(e) => setFileName(e.target.value)}
               className="flex-1 px-3 py-2 bg-gray-900 border border-emerald-600 rounded-lg text-emerald-300 text-sm"
             />
+
+            {/* SMALL SAVE BUTTON ON MOBILE */}
             <button
               onClick={saveFile}
-              className="px-4 py-2 bg-emerald-500 text-black rounded-lg font-semibold flex items-center gap-2 hover:bg-emerald-400"
+              className="px-3 py-2 bg-emerald-500 text-black text-sm rounded-lg font-semibold flex items-center gap-1 hover:bg-emerald-400 sm:px-4 sm:py-2 sm:text-base w-full sm:w-auto justify-center"
             >
-              <RiSaveLine size={18} /> Save
+              <RiSaveLine size={16} />
+              <span className="hidden sm:inline">Save</span>
+              <span className="sm:hidden">Save</span>
             </button>
           </div>
         </header>
 
-        {/* ✅ BODY */}
-        <div className="flex flex-col lg:flex-row flex-1 overflow-hidden">
+        {/* BODY */}
+        <div className="flex flex-col lg:flex-row">
 
-          {/* ✅ LEFT — Monaco Editor */}
-          <section className="flex-1 flex flex-col p-4 h-[60vh] lg:h-auto">
-            <div className="flex-1 border border-emerald-700/40 rounded-xl overflow-hidden shadow-inner">
+          {/* EDITOR */}
+          <section className="flex-1 p-4">
+            <div className="border border-emerald-700/40 rounded-xl overflow-hidden shadow-inner h-[60vh] sm:h-[70vh] lg:h-[75vh]">
               <Editor
                 height="100%"
                 theme="vs-dark"
@@ -174,49 +178,49 @@ export default function CodeEditor() {
                   setCode((prev) => ({ ...prev, [language]: value }))
                 }
                 options={{
-                  minimap: { enabled: true },
+                  minimap: { enabled: false },
                   fontSize: 14,
                   automaticLayout: true,
                 }}
               />
             </div>
 
-            {/* Messages + Run */}
-            <div className="flex justify-between items-center mt-3">
+            {/* RUN + MESSAGE */}
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mt-3 gap-2">
 
               {message && (
-                <p className={`text-sm ${
-                  messageType === "error"
-                    ? "text-red-400"
-                    : messageType === "success"
-                    ? "text-emerald-400"
-                    : "text-yellow-300"
-                }`}>
+                <p
+                  className={`text-sm ${
+                    messageType === "error"
+                      ? "text-red-400"
+                      : messageType === "success"
+                      ? "text-emerald-400"
+                      : "text-yellow-300"
+                  }`}
+                >
                   {message}
                 </p>
               )}
 
               <button
                 onClick={runCode}
-                className="px-6 py-2 bg-emerald-500 hover:bg-emerald-400 
-                text-black rounded-lg font-semibold flex items-center gap-2"
+                className="px-6 py-2 bg-emerald-500 hover:bg-emerald-400 text-black rounded-lg font-semibold flex items-center gap-2 w-full sm:w-auto justify-center"
               >
                 <RiPlayLine size={18} /> Run
               </button>
             </div>
           </section>
 
-          {/* ✅ RIGHT — Output + Recent Files */}
-          <aside className="w-full lg:w-[350px] border-t lg:border-l border-emerald-700/40 bg-gray-900/60 flex flex-col">
+          {/* OUTPUT + RECENT FILES */}
+          <aside className="w-full lg:w-[350px] border-t lg:border-l border-emerald-700/40 bg-gray-900/60 p-4">
 
-            {/* Output */}
-            <div className="p-4 border-b border-emerald-700/40">
+            {/* OUTPUT */}
+            <div className="border-b border-emerald-700/40 pb-3 mb-4">
               <h2 className="text-emerald-400 font-bold mb-3 flex items-center gap-2">
                 Output
               </h2>
 
-              <pre className="bg-gray-950 p-4 rounded-lg text-green-300 
-              font-mono text-sm max-h-[250px] overflow-auto">
+              <pre className="bg-gray-950 p-4 rounded-lg text-green-300 font-mono text-sm max-h-[250px] overflow-auto">
                 {error ? (
                   <span className="text-red-400">{error}</span>
                 ) : (
@@ -232,8 +236,8 @@ export default function CodeEditor() {
               </pre>
             </div>
 
-            {/* Recent Files */}
-            <div className="p-4 overflow-y-auto flex-1">
+            {/* RECENT FILES */}
+            <div>
               <h3 className="text-emerald-400 font-semibold mb-3 flex items-center gap-2">
                 <RiFolderOpenLine size={20} /> Recent Files
               </h3>
@@ -246,9 +250,7 @@ export default function CodeEditor() {
                     <li key={file._id}>
                       <button
                         onClick={() => loadFile(file)}
-                        className="w-full text-left px-3 py-2 bg-gray-900 
-                        text-emerald-300 hover:bg-emerald-700/20 border 
-                        border-emerald-800 rounded-lg text-sm flex items-center gap-2"
+                        className="w-full text-left px-3 py-2 bg-gray-900 text-emerald-300 hover:bg-emerald-700/20 border border-emerald-800 rounded-lg text-sm flex items-center gap-2"
                       >
                         <RiFileCodeLine size={16} />
                         {file.fileName}
@@ -259,7 +261,6 @@ export default function CodeEditor() {
                 </ul>
               )}
             </div>
-
           </aside>
         </div>
       </div>
