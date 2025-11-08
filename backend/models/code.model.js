@@ -37,6 +37,10 @@ const CodeSchema = new mongoose.Schema({
   output: {
     type: String,
   },
+     graph: {
+        type: String, 
+        default: null
+    },
   error: {
     type: String,
   },
